@@ -7,32 +7,32 @@
     "start": "node scripts/webserver.js"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.2",
+    "@babel/core": "^7.7.7",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/preset-react": "^7.7.4",
+    "babel-loader": "^8.0.6",
     "babel-preset-react-app": "^3.1.2",
     "clean-webpack-plugin": "^0.1.17",
-    "copy-webpack-plugin": "^4.2.0",
+    "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^0.25.0",
     "file-loader": "^0.11.2",
     "fs-extra": "^0.30.0",
     "html-loader": "^0.4.5",
     "html-webpack-plugin": "2.24.1",
+    "node-sass": "^4.13.0",
+    "sass-loader": "^7.3.1",
     "style-loader": "^0.13.0",
     "webpack": "2.2.1",
-    "webpack-dev-server": "^2.3.0",
-    "node-sass": "^4.13.0",
-    "sass-loader": "^7.1.0",
+    "webpack-dev-server": "^2.11.5",
     "write-file-webpack-plugin": "3.4.2"
   },
   "dependencies": {
     "classnames": "^2.2.6",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "react-flex-panel": "^1.0.0",
     "react-fontawesome": "^1.7.1",
-    "react-inspector": "^2.3.0"
+    "react-inspector": "^2.3.1"
   }
 }
