@@ -176,13 +176,14 @@ class FrameEntry extends React.PureComponent {
 
     checkViable() {
         const {frame, filter, isFilterInverse} = this.props;
-        if (isFilterInverse) {
-            return !!grep(frame.text, filter);
-        } else  {
-            return !grep(frame.text, filter);
+        if (filter) {
+            if (isFilterInverse) {
+                return !!grep(frame.text, filter);
+            } else {
+                return !grep(frame.text, filter);
+            }
+
         }
-
-
     }
 
     render() {
@@ -204,7 +205,7 @@ const TextViewer = ({data}) => <div className="TextViewer tab-pane">{data}</div>
 
 const JsonViewer = ({data}) => (
     <div className="JsonViewer tab-pane">
-        <ObjectInspector data={data}/>
+        <ObjectInspector data={data} expandLevel={1}/>
     </div>
 );
 
@@ -214,8 +215,13 @@ class FrameView extends React.Component {
     static getDerivedStateFromProps(props, state) {
         const {frame} = props;
         const panels = [];
+        if (frame.binary) {
+            panels.push('hex');
+        }
+
         if (frame.text != null) {
-            panels.push('text');
+
+
             if (!frame.hasOwnProperty('json')) {
                 try {
                     frame.json = JSON.parse(frame.text);
@@ -226,10 +232,10 @@ class FrameView extends React.Component {
             if (frame.json !== undefined) {
                 panels.push('json');
             }
+
+            panels.push('text');
         }
-        if (frame.binary) {
-            panels.push('hex');
-        }
+
         if (!panels.includes(state.panel)) {
             return {panel: panels[0]};
         }
@@ -251,9 +257,10 @@ class FrameView extends React.Component {
         return (
             <div className="FrameView">
                 <ul className="tab-line">
-                    {frame.text != null && this.makePanel('text', 'Text')}
+
                     {frame.json !== undefined && this.makePanel('json', 'JSON')}
                     {frame.binary != null && this.makePanel('hex', 'Hex')}
+                    {frame.text != null && this.makePanel('text', 'Text')}
                 </ul>
                 {panel === 'text' && <TextViewer data={frame.text}/>}
                 {panel === 'json' && <JsonViewer data={frame.json}/>}
