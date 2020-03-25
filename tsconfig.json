@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["es2018", "es2020.string", "DOM"],
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "target": "es6",
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "typeRoots": ["./src/typings"]
+  },
+  "exclude": ["node_modules"]
+}

@@ -1,101 +1,106 @@
-var webpack = require("webpack"),
-    path = require("path"),
-    fileSystem = require("fs"),
-    env = require("./env"),
-    CleanWebpackPlugin = require("clean-webpack-plugin"),
-    CopyWebpackPlugin = require("copy-webpack-plugin"),
-    HtmlWebpackPlugin = require("html-webpack-plugin"),
-    WriteFilePlugin = require("write-file-webpack-plugin");
+var webpack = require('webpack'),
+  path = require('path'),
+  fileSystem = require('fs'),
+  env = require('./env'),
+  CleanWebpackPlugin = require('clean-webpack-plugin'),
+  CopyWebpackPlugin = require('copy-webpack-plugin'),
+  HtmlWebpackPlugin = require('html-webpack-plugin'),
+  WriteFilePlugin = require('write-file-webpack-plugin');
 
-var fileExtensions = ["jpg", "jpeg", "png", "gif", "eot", "otf", "svg", "ttf", "woff", "woff2"];
+var fileExtensions = ['jpg', 'jpeg', 'png', 'gif', 'eot', 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
-var appDir = path.join(__dirname, "..");
-var srcDir = path.join(appDir, "src");
+var appDir = path.join(__dirname, '..');
+var srcDir = path.join(appDir, 'src');
 
 var options = {
   entry: {
-    background: path.join(srcDir, "background.js"),
-    inspector: path.join(srcDir, "inspector.js"),
+    background: path.join(srcDir, 'background.ts'),
+    inspector: path.join(srcDir, 'inspector.tsx'),
   },
   output: {
-    path: path.join(appDir, "build"),
-    filename: "[name].bundle.js"
+    path: path.join(appDir, 'build'),
+    filename: '[name].bundle.js',
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-        loader: "style-loader!css-loader",
-        exclude: /node_modules/
+        loader: 'style-loader!css-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.scss$/,
-        use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader"
-        ],
-        exclude: /node_modules/
+        use: ['style-loader', 'css-loader', 'sass-loader'],
+        exclude: /node_modules/,
       },
       {
-        test: new RegExp('\.(' + fileExtensions.join('|') + ')$'),
-        loader: "file-loader?name=[name].[ext]",
-        exclude: /node_modules/
+        test: new RegExp(`.(${fileExtensions.join('|')})$`),
+        loader: 'file-loader?name=[name].[ext]',
+        exclude: /node_modules/,
       },
       {
         test: /\.html$/,
-        loader: "html-loader",
-        exclude: /node_modules/
+        loader: 'html-loader',
+        exclude: /node_modules/,
       },
       {
-        test: /\.(js|jsx)$/,
-        loader: "babel-loader",
+        test: /\.(js|jsx|tsx|ts)$/,
+        loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
           babelrc: false,
           presets: [
             require.resolve('@babel/preset-env'),
             require.resolve('@babel/preset-react'),
+            require.resolve('@babel/preset-typescript'),
           ],
           plugins: [
             require.resolve('@babel/plugin-proposal-class-properties'),
+            require.resolve('@babel/plugin-proposal-object-rest-spread'),
           ],
           cacheDirectory: true,
         },
-      }
-    ]
+      },
+    ],
   },
   plugins: [
     // clean the build folder
-    new CleanWebpackPlugin(["build"]),
+    new CleanWebpackPlugin(['build']),
     // expose and write the allowed env vars on the compiled bundle
     new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify(env.NODE_ENV)
+      'process.env.NODE_ENV': JSON.stringify(env.NODE_ENV),
     }),
-    new CopyWebpackPlugin([{
-      from: "src/manifest.json",
-      transform: function (content, path) {
-        // generates the manifest file using the package.json informations
-        return Buffer.from(JSON.stringify({
-          description: process.env.npm_package_description,
-          version: process.env.npm_package_version,
-          ...JSON.parse(content.toString())
-        }))
-      }
-    }]),
+    new CopyWebpackPlugin([
+      {
+        from: 'src/manifest.json',
+        transform: function(content, path) {
+          // generates the manifest file using the package.json informations
+          return Buffer.from(
+            JSON.stringify({
+              description: process.env.npm_package_description,
+              version: process.env.npm_package_version,
+              ...JSON.parse(content.toString()),
+            })
+          );
+        },
+      },
+    ]),
     new HtmlWebpackPlugin({
-      template: path.join(srcDir, "background.html"),
-      filename: "background.html",
-      chunks: ["background"]
+      template: path.join(srcDir, 'background.html'),
+      filename: 'background.html',
+      chunks: ['background'],
     }),
     new HtmlWebpackPlugin({
-      template: path.join(srcDir, "inspector.html"),
-      filename: "inspector.html",
-      chunks: ["inspector"]
+      template: path.join(srcDir, 'inspector.html'),
+      filename: 'inspector.html',
+      chunks: ['inspector'],
     }),
-    new WriteFilePlugin()
+    new WriteFilePlugin(),
   ],
-  devtool: "inline-module-source-map"
+  devtool: 'inline-module-source-map',
+  resolve: {
+    extensions: ['*', '.js', '.jsx', '.tsx', '.ts'],
+  },
 };
 
 module.exports = options;

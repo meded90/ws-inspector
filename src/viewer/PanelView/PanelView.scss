@@ -1,0 +1,81 @@
+.PanelView {
+  .message {
+    display: block;
+    font-style: italic;
+    color: #6e6e6e;
+    margin: 8px;
+  }
+}
+
+.FrameView {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+
+  .tab-line {
+    flex-shrink: 0;
+    background-color: #eee;
+    border-bottom: 1px solid #d0d0d0;
+    font-size: 16px;
+    padding: 4px 8px 0 8px;
+
+    .tab-button {
+      cursor: pointer;
+      background-color: #f3f3f3;
+      display: inline-block;
+      padding: 2px 12px;
+      margin: 0 4px;
+      border: 1px solid #d0d0d0;
+      margin-bottom: -1px;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+
+      &.active {
+        background-color: #fff;
+        border-bottom-color: #fff;
+      }
+    }
+  }
+
+  .tab-pane {
+    flex: 1;
+    padding: 12px;
+    overflow: auto;
+  }
+
+  .object-comment {
+    color: #008000;
+  }
+
+  .error {
+    background-color: rgb(255, 240, 240);
+    border-top: 1px solid rgb(255, 214, 214);
+    border-bottom: 1px solid rgb(255, 214, 214);
+    color: #f00;
+    margin: 0 -12px;
+    padding: 4px 12px;
+    white-space: nowrap;
+
+    .fa {
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 6px;
+      margin-top: 1px;
+    }
+
+    .error-message {
+      display: inline-block;
+      font-family: monospace;
+      white-space: pre;
+    }
+  }
+
+  .TextViewer {
+    white-space: pre;
+    font-family: monospace;
+  }
+}

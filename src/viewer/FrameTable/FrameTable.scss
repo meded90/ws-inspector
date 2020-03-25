@@ -1,0 +1,77 @@
+.frame-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+
+  .frame {
+    white-space: nowrap;
+    padding: 0 4px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+
+    .fa {
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    &.frame-incoming {
+      background-color: rgb(255, 230, 202);
+
+      .fa {
+        color: rgb(168, 104, 19);
+      }
+    }
+
+    &.frame-outgoing {
+      background-color: rgb(246, 255, 208);
+
+      .fa {
+        color: rgb(98, 168, 19);
+      }
+    }
+
+    .timestamp {
+      margin: 0 6px 0 2px;
+      color: #6e6e6e;
+      flex-shrink: 0;
+    }
+
+    .name {
+      flex: 1 1;
+      min-width: 0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .length {
+      flex-shrink: 0;
+      color: #aaa;
+    }
+
+    &.frame-selected {
+      background-color: rgb(42, 159, 255);
+
+      &.frame-incoming {
+        &, .fa {
+          color: rgb(255, 230, 202);
+        }
+      }
+
+      &.frame-outgoing {
+        &, .fa {
+          color: rgb(246, 255, 208);
+        }
+      }
+
+      .timestamp {
+        color: #ccc;
+      }
+
+      .length {
+        color: #6e6e6e;
+      }
+    }
+  }
+}

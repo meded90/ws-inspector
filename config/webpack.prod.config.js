@@ -14,8 +14,8 @@ var srcDir = path.join(appDir, "src");
 
 var options = {
   entry: {
-    background: path.join(srcDir, "background.js"),
-    inspector: path.join(srcDir, "inspector.js"),
+    background: path.join(srcDir, "background.ts"),
+    inspector: path.join(srcDir, "inspector.tsx"),
   },
   output: {
     path: path.join(appDir, "build"),
