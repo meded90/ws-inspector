@@ -1,84 +1,73 @@
-import { ObjectInspector, ObjectInspectorProps } from 'react-inspector';
-import React from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import cx from 'classnames';
 import HexViewer from './HexViewer';
 import './PanelView.scss';
-import { FrameEntryType } from '../types';
+import { useStores } from '../../stores/RootStore';
+import { useObserver } from 'mobx-react';
+import { IContentType } from '../../models/FrameEntry';
+import JsonViewer from './JsonViewer';
+import TextViewer from './ TextViewer';
 
-const TextViewer = ({ data }: { data: string | undefined }) => (
-  <div className="TextViewer tab-pane">{data}</div>
-);
+export default function PanelView() {
+  const { frameStore } = useStores();
 
-const JsonViewer = (data: ObjectInspectorProps) => (
-  <div className="JsonViewer tab-pane">
-    <ObjectInspector data={data} expandLevel={2} />
-  </div>
-);
-type PanelName = 'json' | 'hex' | 'text';
-interface PanelViewState {
-  panel?: PanelName | PanelName[] | null;
-}
-interface PanelViewProps {
-  frame: FrameEntryType;
-}
+  return useObserver(() => {
+    const frame = frameStore.activeFrame;
 
-export default class PanelView extends React.Component<PanelViewProps, PanelViewState> {
-  state = { panel: null };
+    const [panel, setPanel] = useState(frameStore.activeFrame?.contentType);
 
-  static getDerivedStateFromProps(props: PanelViewProps, state: PanelViewState) {
-    const { frame } = props;
-    const panels = [];
-    if (frame.binary) {
-      panels.push('hex');
-    }
-
-    if (frame.text != null) {
-      const hasJSONProperty = Object.prototype.hasOwnProperty.call(frame, 'json');
-      if (!hasJSONProperty) {
-        try {
-          frame.json = JSON.parse(frame.text);
-        } catch {
-          frame.json = undefined;
-        }
+    const prevContentType = useRef(frameStore.activeFrame?.contentType);
+    useEffect(() => {
+      if (!prevContentType.current && frameStore.activeFrame?.contentType) {
+        setPanel(frameStore.activeFrame?.contentType);
       }
-      if (frame.json !== undefined) {
-        panels.push('json');
-      }
+      prevContentType.current = frameStore.activeFrame?.contentType;
+    }, [frameStore.activeFrame?.contentType]);
 
-      panels.push('text');
+    if (!frame) {
+      return <span className="message">Select a frame to view its contents</span>;
     }
-
-    if (!panels.includes(state.panel as string)) {
-      return { panel: panels[0] };
-    }
-    return null;
-  }
-
-  makePanel(name: PanelName, title: string) {
-    return (
-      <li
-        className={cx('tab-button', { active: this.state.panel === name })}
-        onClick={() => this.setState({ panel: name })}
-      >
-        {title}
-      </li>
-    );
-  }
-
-  render() {
-    const { frame } = this.props;
-    const { panel } = this.state;
     return (
       <div className="FrameView">
         <ul className="tab-line">
-          {frame.json !== undefined && this.makePanel('json', 'JSON')}
-          {frame.binary != null && this.makePanel('hex', 'Hex')}
-          {frame.text != null && this.makePanel('text', 'Text')}
+          {frame.contentType === IContentType.json && (
+            <Tab key={'json'} name={IContentType.json} panel={panel} onSelect={setPanel}>
+              JSON
+            </Tab>
+          )}
+          {frame.contentType === IContentType.binary && (
+            <Tab key={'hex'} name={IContentType.binary} panel={panel} onSelect={setPanel}>
+              Hex
+            </Tab>
+          )}
+          {frame.contentType !== IContentType.text && (
+            <Tab key={'text'} name={IContentType.text} panel={panel} onSelect={setPanel}>
+              Text
+            </Tab>
+          )}
         </ul>
-        {panel === 'text' && <TextViewer data={frame.text} />}
-        {panel === 'json' && <JsonViewer data={frame.json} />}
-        {panel === 'hex' && <HexViewer className="tab-pane" data={frame.binary as Uint8Array} />}
+        {!panel && panel === IContentType.text && <TextViewer data={frame.text} />}
+        {panel === IContentType.json && <JsonViewer data={frame.content} />}
+        {panel === IContentType.binary && (
+          <HexViewer className="tab-pane" data={frame.content as Uint8Array} />
+        )}
       </div>
     );
-  }
+  });
+}
+
+function Tab(props: {
+  name: IContentType;
+  children: ReactNode;
+  onSelect: (name: IContentType) => void;
+  panel?: string;
+}) {
+  return (
+    <li
+      className={cx('tab-button', { active: props.panel === props.name })}
+      onClick={() => props.onSelect(props.name)}
+    >
+      {props.children}
+    </li>
+  );
 }

@@ -1,5 +1,4 @@
-import { EFilter, FrameEntryType } from '../types';
-import { FrameEntry } from '../../FrameData';
+import { FrameEntry } from "../../models/FrameEntry";
 
 export function grep(text: string, regexp: string) {
   if (!(text && regexp)) {
@@ -16,6 +15,7 @@ export function grep(text: string, regexp: string) {
   } catch (e) {}
   return '';
 }
+
 const padded = (num: number, d: number): string => num.toFixed(0).padStart(d, '0');
 
 export const TimeStamp = (time: Date): string => {
@@ -25,25 +25,28 @@ export const TimeStamp = (time: Date): string => {
   const ms = time.getMilliseconds();
   return `${padded(h, 2)}:${padded(m, 2)}:${padded(s, 2)}.${padded(ms, 3)}`;
 };
-export const getName = (frame: FrameEntryType, filterData: EFilter): string => {
-  if (frame.text != null) {
-    return grep(frame.text, filterData.regName) || frame.text;
+
+export const getName = (frame: FrameEntry, regName: string): string => {
+  if (frame.opcode === 1) {
+    const MAX_STRING_LENGTH = 275;
+    return (
+      grep(frame.text, regName).slice(0, MAX_STRING_LENGTH) ||
+      frame.text.slice(0, MAX_STRING_LENGTH)
+    );
   }
   return 'Binary Frame';
 };
 
-export const newGetName = (frame: FrameEntry, filterData: EFilter): string => {
-  if (frame.contentType !== 'binary') {
-    return grep(frame.text, filterData.regName) || frame.text;
-  }
-  return 'Binary Frame';
-};
-export const checkViable = (frame: FrameEntryType, filterData: EFilter): boolean => {
-  if (filterData.filter && frame.text) {
-    if (filterData.isFilterInverse) {
-      return !!grep(frame.text, filterData.filter);
+export const checkViable = (
+  text: string,
+  filter: string,
+  isFilterInverse: boolean
+): boolean => {
+  if (filter && text) {
+    if (isFilterInverse) {
+      return !!grep(text, filter);
     }
-    return !grep(frame.text, filterData.filter);
+    return !grep(text, filter);
   }
   return false;
 };

@@ -1,20 +1,7 @@
-export type frameSendingType = 'incoming' | 'outgoing';
-export interface FrameEntryType {
-  sendingType: frameSendingType;
-  name: string;
-  id: number;
-  time: Date;
-  length: number;
-  text?: string;
-  binary?: Uint8Array;
-  json?: object;
+export enum frameSendingType {
+  INC = 'incoming',
+  OUT = 'outgoing'
 };
-
-export interface EFilter {
-  regName: string;
-  filter: string;
-  isFilterInverse: boolean;
-}
 
 export interface WebSocketFrame {
   opcode: number;

@@ -1,5 +1,5 @@
 import './img/icon-128.png';
-import Window from 'chrome';
+// import { Window } from 'chrome';
 
 type inspectorMask = {
   id: number;
@@ -43,7 +43,7 @@ chrome.browserAction.onClicked.addListener((tab) => {
         return;
       }
 
-      // inspector Local and inspector should be identical  TODO delete inspectorLocal?
+      // inspector Local and inspector should be identical  TODO delete inspectorLocal
       const inspectorLocal = inspectors.find(({ id }) => id === tab.id);
       // if inspector window exists it get reattached and focused
       if (inspectorLocal) {
@@ -63,7 +63,7 @@ chrome.browserAction.onClicked.addListener((tab) => {
             height: 600,
           },
           (wnd) => {
-            inspectors.push({ id: tab.id, popup: wnd, active: true });
+            inspectors.push({ id: tab.id as number, popup: wnd, active: true });
           }
         );
       }

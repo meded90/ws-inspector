@@ -41,6 +41,8 @@ module.exports = {
     "react-hooks/exhaustive-deps": "warn", // to make 'react-hooks' work
     "react/prop-types": 0, // prop-types rule
     "no-empty": 0,
+    "no-underscore-dangle": 0,
+    "lines-between-class-members": 0,
 
 
   },

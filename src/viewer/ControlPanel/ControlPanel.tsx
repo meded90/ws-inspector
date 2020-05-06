@@ -1,129 +1,108 @@
-import React, { ChangeEvent, MouseEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 import FontAwesome from 'react-fontawesome';
 import cx from 'classnames';
 import './ControlPanel.scss';
-import { EFilter } from '../types';
+import { useStores } from '../../stores/RootStore';
+import { IOpenInput } from '../../stores/controlStore';
+import { useObserver } from 'mobx-react';
 
-type ControlPanelMode = {
-  isCapturing: boolean;
-  onClear: (event: MouseEvent) => void;
-  onFilterModeToggle: (event: MouseEvent) => void;
-  onCapturingToggle: (event: MouseEvent) => void;
-  handleRegName: (arg0: string) => void;
-  handleFilter: (arg0: string) => void;
-};
-interface ControlPanelProps extends ControlPanelMode, EFilter {}
-interface ControlPanelState {
-  openInput?: null | 'filter' | 'name';
-}
+export const ControlPanel = () => {
+  const { controlStore, frameStore } = useStores();
 
-export default class ControlPanel extends React.Component<ControlPanelProps, ControlPanelState> {
-  constructor(props: ControlPanelProps) {
-    super(props);
-    this.state = {
-      openInput: null, // 'filter' | 'name'
-    };
-  }
+  const onRegName = (e: ChangeEvent<HTMLInputElement>) => {
+    controlStore.regName = e.target.value;
+  };
 
-  openNameReg = () => {
-    if (this.state.openInput === 'name') {
-      this.setState({ openInput: null });
+  const onFilter = (e: ChangeEvent<HTMLInputElement>) => {
+    controlStore.filter = e.target.value;
+  };
+
+  const openNameReg = () => {
+    if (controlStore.openInput === IOpenInput.name) {
+      controlStore.openInput = IOpenInput.close;
     } else {
-      this.setState({ openInput: 'name' });
+      controlStore.openInput = IOpenInput.name;
+    }
+  };
+  const openFilter = () => {
+    if (controlStore.openInput === IOpenInput.filter) {
+      controlStore.openInput = IOpenInput.close;
+    } else {
+      controlStore.openInput = IOpenInput.filter;
     }
   };
 
-  openFilter = () => {
-    if (this.state.openInput === 'filter') {
-      this.setState({ openInput: null });
-    } else {
-      this.setState({ openInput: 'filter' });
-    }
+  const onClear = () => {
+    frameStore.deleteAllFrameEntries();
+  };
+  const onFilterModeToggle = () => {
+    controlStore.isFilterInverse = !controlStore.isFilterInverse;
+  };
+  const toggleIsCapturing = () => {
+    controlStore.isCapturing = !controlStore.isCapturing;
   };
 
-  render() {
-    const {
-      onClear,
-      onCapturingToggle,
-      regName,
-      handleRegName,
-      isCapturing,
-      filter,
-      handleFilter,
-      isFilterInverse,
-      onFilterModeToggle,
-    } = this.props;
-
-    const onRegName = (e: ChangeEvent<HTMLInputElement>) => {
-      handleRegName(e.target.value);
-    };
-
-    const onFilter = (e: ChangeEvent<HTMLInputElement>) => {
-      handleFilter(e.target.value);
-    };
-
-    return (
-      <div className="list-controls">
-        <span
-          className={isCapturing ? 'list-button record active' : 'list-button record'}
-          onClick={onCapturingToggle}
-          title={isCapturing ? 'Stop' : 'Start'}
+  return useObserver(() => (
+    <div className="list-controls">
+      <span
+        className={controlStore.isCapturing ? 'list-button record active' : 'list-button record'}
+        onClick={toggleIsCapturing}
+        title={controlStore.isCapturing ? 'Stop' : 'Start'}
+      />
+      <FontAwesome className="list-button" name="ban" onClick={onClear} title="Clear" />
+      <div>{controlStore.isCapturing}</div>
+      <span className={'separator'} />
+      {/* name */}
+      <FontAwesome
+        className={cx('list-button', {
+          active: !!controlStore.regName,
+        })}
+        name="file-signature"
+        onClick={openNameReg}
+        title="RexExp"
+      />
+      <div
+        className={cx('input-wrap', {
+          hide: controlStore.openInput !== IOpenInput.name,
+        })}
+      >
+        <input
+          className={'input'}
+          name={'reg-name'}
+          placeholder={'Name regexp: "type":\\s?"(\\w+)"'}
+          value={controlStore.regName}
+          onChange={onRegName}
         />
-        <FontAwesome className="list-button" name="ban" onClick={onClear} title="Clear" />
-        <span className={'separator'} />
-        {/* name */}
-        <FontAwesome
-          className={cx('list-button', {
-            active: !!regName,
-          })}
-          name="file-signature"
-          onClick={this.openNameReg}
-          title="RexExp"
-        />
-        <div
-          className={cx('input-wrap', {
-            hide: this.state.openInput !== 'name',
-          })}
-        >
-          <input
-            className={'input'}
-            name={'reg-name'}
-            placeholder={'Name regexp: "type":"(\\w+)"'}
-            value={regName}
-            onChange={onRegName}
-          />
-        </div>
-
-        {/* filter */}
-        <FontAwesome
-          className={cx('list-button', {
-            active: !!filter,
-          })}
-          name="filter"
-          onClick={this.openFilter}
-          title="Filter"
-        />
-
-        <div
-          className={cx('input-wrap', {
-            hide: this.state.openInput !== 'filter',
-          })}
-        >
-          <input
-            className={'input'}
-            name={'open-filter'}
-            placeholder={'Filter regexp'}
-            value={filter}
-            onChange={onFilter}
-          />
-          <FontAwesome
-            className="list-button"
-            onClick={onFilterModeToggle}
-            name={isFilterInverse ? 'check-square' : 'square'}
-          />
-          invert
-        </div>
       </div>
-    );
-  }
-}
+
+      {/* filter */}
+      <FontAwesome
+        className={cx('list-button', {
+          active: !!controlStore.filter,
+        })}
+        name="filter"
+        onClick={openFilter}
+        title="Filter"
+      />
+
+      <div
+        className={cx('input-wrap', {
+          hide: controlStore.openInput !== IOpenInput.filter,
+        })}
+      >
+        <input
+          className={'input'}
+          name={'open-filter'}
+          placeholder={'Filter regexp: PING|PONG'}
+          value={controlStore.filter}
+          onChange={onFilter}
+        />
+        <FontAwesome
+          className="list-button"
+          onClick={onFilterModeToggle}
+          name={controlStore.isFilterInverse ? 'check-square' : 'square'}
+        /> invert
+      </div>
+    </div>
+  ));
+};

@@ -10,10 +10,16 @@
     border-bottom: 1px solid #ccc;
     display: flex;
     flex-direction: row;
+    cursor: pointer;
+
+    &.hide {
+      display: none;
+    }
 
     .fa {
       flex-shrink: 0;
       margin-top: 3px;
+      margin-right: 6px;
     }
 
     &.frame-incoming {
@@ -33,7 +39,7 @@
     }
 
     .timestamp {
-      margin: 0 6px 0 2px;
+      margin: 0 0px 0 2px;
       color: #6e6e6e;
       flex-shrink: 0;
     }
@@ -48,6 +54,7 @@
     .length {
       flex-shrink: 0;
       color: #aaa;
+      margin-right: 5px;
     }
 
     &.frame-selected {
