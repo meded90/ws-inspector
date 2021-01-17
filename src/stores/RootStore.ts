@@ -21,7 +21,7 @@ export type StoreConsumer<K extends keyof RootStore> = {
 
 
 export function useStores(): RootStore {
-  return useContext(MobXProviderContext);
+  return useContext(MobXProviderContext) as RootStore;
 }
 
 /*

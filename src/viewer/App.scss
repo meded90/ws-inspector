@@ -1,11 +1,25 @@
 :root {
+  /// ------------------------------------------
+  // Inspector color
+  //
   --accent-color: #1a73e8;
+  --accent-fg-color: #1a73e8;
+  --accent-color-hover: #3b86e8;
+  --accent-fg-color-hover: #1567d3;
+  --active-control-bg-color: #5a5a5a;
+  --focus-bg-color: #e2eaf3;
+
+  --toolbar-bg-color: #f3f3f3;
+  --toolbar-hover-bg-color: #eaeaea;
+  /// ------------------------------------------
+  //  Custom color
+  //
 }
 
 .App {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #303942;
+  font-family: '.SFNSDisplay-Regular', 'Helvetica Neue', 'Lucida Grande', sans-serif;
   font-size: 12px;
-  color: #333;
   overflow: hidden;
 }
 

@@ -7,7 +7,7 @@ import { IOpenInput } from '../../stores/controlStore';
 import { useObserver } from 'mobx-react';
 
 export const ControlPanel = () => {
-  const { controlStore, frameStore } = useStores();
+  const { controlStore, frameStore, chromeStore } = useStores();
 
   const onRegName = (e: ChangeEvent<HTMLInputElement>) => {
     controlStore.regName = e.target.value;
@@ -44,11 +44,17 @@ export const ControlPanel = () => {
 
   return useObserver(() => (
     <div className="list-controls">
-      <span
-        className={controlStore.isCapturing ? 'list-button record active' : 'list-button record'}
-        onClick={toggleIsCapturing}
-        title={controlStore.isCapturing ? 'Stop' : 'Start'}
-      />
+      {!chromeStore.isAttached ?
+        <span
+          className={'list-button record'}
+          onClick={chromeStore.startDebugging}
+          title={'Start'}
+        />
+        : <span
+          className={controlStore.isCapturing ? 'list-button record active' : 'list-button record'}
+          onClick={toggleIsCapturing}
+          title={controlStore.isCapturing ? 'Stop' : 'Start'}
+        />}
       <FontAwesome className="list-button" name="ban" onClick={onClear} title="Clear" />
       <div>{controlStore.isCapturing}</div>
       <span className={'separator'} />

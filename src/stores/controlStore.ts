@@ -11,9 +11,9 @@ export class ControlStore {
   @observable activeId: string | null;
   @observable isCapturing = true;
   @observable regName = '';
-  @observable filter = 'blue';
+  @observable filter = '';
   @observable isFilterInverse = true;
-  @observable openInput: IOpenInput = IOpenInput.filter;
+  @observable openInput: IOpenInput = IOpenInput.close;
   @observable
   urlWs: Record<string, Record<string, string>> = {};
   cacheKey: Array<keyof ControlStore> = ['isCapturing', 'regName', 'filter', 'isFilterInverse', 'urlWs'];

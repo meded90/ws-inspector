@@ -6,7 +6,7 @@ import { useStores } from '../../stores/RootStore';
 import { useObserver } from 'mobx-react';
 import { IContentType } from '../../models/FrameEntry';
 import JsonViewer from './JsonViewer';
-import TextViewer from './ TextViewer';
+import TextViewer from './TextViewer';
 
 export default function PanelView() {
   const { frameStore } = useStores();
