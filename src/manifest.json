@@ -1,8 +1,14 @@
 {
-  "name": "WebSocket Frame Inspector",
+  "name": "WS Inspector",
+  "minimum_chrome_version": "49",
   "permissions": [
     "debugger",
-    "tabs"
+    "network",
+    "tabs",
+    "file:///*",
+    "http://*/*",
+    "https://*/*",
+    "chrome-extension://*"
   ],
   "browser_action": {
     "default_title": "Open WebSocket Inspector",
@@ -11,7 +17,7 @@
   "background": {
     "page": "background.html"
   },
-  "devtools_page": "devtools.html",
+  "devtools_page": "main.html",
   "icons": {
     "128": "icon-128.png"
   },

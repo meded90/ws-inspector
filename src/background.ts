@@ -1,5 +1,5 @@
 import './img/icon-128.png';
-// import { Window } from 'chrome';
+import { Window } from '@types/chrome';
 
 type inspectorMask = {
   id: number;

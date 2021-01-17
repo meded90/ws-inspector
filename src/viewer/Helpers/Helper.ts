@@ -1,4 +1,4 @@
-import { FrameEntry } from "../../models/FrameEntry";
+import { FrameEntry } from '../../models/FrameEntry';
 
 export function grep(text: string, regexp: string) {
   if (!(text && regexp)) {
@@ -37,11 +37,7 @@ export const getName = (frame: FrameEntry, regName: string): string => {
   return 'Binary Frame';
 };
 
-export const checkViable = (
-  text: string,
-  filter: string,
-  isFilterInverse: boolean
-): boolean => {
+export const checkViable = (text: string, filter: string, isFilterInverse: boolean): boolean => {
   if (filter && text) {
     if (isFilterInverse) {
       return !!grep(text, filter);

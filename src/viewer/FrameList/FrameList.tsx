@@ -1,5 +1,5 @@
 /* eslint max-classes-per-file: 0 */
-import React, { MouseEvent, useCallback } from 'react';
+import React, { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import cx from 'classnames';
 import FontAwesome from 'react-fontawesome';
 import { TimeStamp } from '../Helpers/Helper';
@@ -7,33 +7,93 @@ import './FrameList.scss';
 import { useStores } from '../../stores/RootStore';
 import { FrameEntry } from '../../models/FrameEntry';
 import { useObserver } from 'mobx-react';
-import { frameSendingType } from '../types';
+import debounce from 'lodash/debounce';
+import { IFrameSendingType } from '../types';
+import { reaction } from 'mobx';
+import { useDocumentEventListener } from '../../hooks/useEventListener';
 
 export default function FrameList() {
   const { controlStore, frameStore } = useStores();
+  const [isBottom, setIsBottom] = useState(true);
+  const wrapperRef = useRef<HTMLUListElement>(null);
+  const checkIsBottomScroll = useCallback(
+    debounce(() => {
+      if (wrapperRef.current) {
+        const el = wrapperRef.current;
+        if (el.clientHeight + el.scrollTop >= el.scrollHeight) {
+          setIsBottom(true);
+        } else {
+          setIsBottom(false);
+        }
+      }
+    }, 100),
+    [],
+  );
 
   const handlerClearSelect = useCallback(() => {
     controlStore.activeId = null;
+  }, [controlStore]);
+
+  const handlerSelect = useCallback(
+    (id) => {
+      controlStore.activeId = id;
+    },
+    [controlStore],
+  );
+
+  const handlerScroll = useCallback(() => {
+    checkIsBottomScroll();
   }, []);
 
-  const handlerSelect = useCallback((id) => {
-    controlStore.activeId = id;
+  useEffect(() => {
+    return reaction(
+      () => [frameStore.frames.length, controlStore.isFilterInverse, controlStore.filter],
+      () => {
+        requestAnimationFrame(() => {
+          if (isBottom && wrapperRef.current) {
+            wrapperRef.current.scrollTop = wrapperRef.current.scrollHeight;
+          }
+        });
+      },
+    );
+  });
+
+  const handlerKeydown = useCallback((e) => {
+    e.preventDefault();
   }, []);
 
-  //TODO: ADD auto scroll to new frame
+  useDocumentEventListener('keydown', (e) => {
+    if (controlStore.activeId) {
+      e.preventDefault();
+      if (e.key === 'ArrowUp') {
+        console.log(`===  \n ArrowUp \n===`);
+      }
+      if (e.key === 'ArrowDown') {
+        console.log(`===  \n ArrowDown \n===`);
+      }
+    }
+  });
 
-  return useObserver(() => (
-    <ul className="frame-list" onClick={handlerClearSelect}>
-      {frameStore.frames.map((frameEntry) => (
-        <FrameItem
-          key={frameEntry.id}
-          frameEntry={frameEntry}
-          selected={frameEntry.id === controlStore.activeId}
-          onSelect={handlerSelect}
-        />
-      ))}
-    </ul>
-  ));
+  return useObserver(() => {
+    return (
+      <ul
+        className="frame-list"
+        onScroll={handlerScroll}
+        ref={wrapperRef}
+        onClick={handlerClearSelect}
+        onKeyDown={handlerKeydown}
+      >
+        {frameStore.frames.map((frameEntry) => (
+          <FrameItem
+            key={frameEntry.id}
+            frameEntry={frameEntry}
+            selected={frameEntry.id === controlStore.activeId}
+            onSelect={handlerSelect}
+          />
+        ))}
+      </ul>
+    );
+  });
 }
 
 interface FrameItemProps {
@@ -60,7 +120,7 @@ function FrameItem(props: FrameItemProps) {
     >
       <FontAwesome
         name={
-          frameEntry.sendingType === frameSendingType.INC ? 'arrow-circle-down' : 'arrow-circle-up'
+          frameEntry.sendingType === IFrameSendingType.INC ? 'arrow-circle-down' : 'arrow-circle-up'
         }
       />
       <span className="name">{frameEntry.name}</span>

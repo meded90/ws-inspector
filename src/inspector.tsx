@@ -1,7 +1,7 @@
 /// <reference types="chrome"/>
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './reset.css';
+import './viewer/reset.css';
 import App from './viewer/App';
 import { createStores } from './stores/RootStore';
 import { Provider } from 'mobx-react';

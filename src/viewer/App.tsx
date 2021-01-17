@@ -4,11 +4,9 @@ import { ControlPanel } from './ControlPanel/ControlPanel';
 import FrameList from './FrameList/FrameList';
 import PanelView from './PanelView/PanelView';
 import './App.scss';
-import { useObservable } from 'mobx-react-lite';
 
 export default function App() {
-
-  return useObservable(
+  return (
     <Panel cols className="App">
       <Panel size={330} minSize={180} resizable className="LeftPanel">
         <ControlPanel />
@@ -16,7 +14,6 @@ export default function App() {
       </Panel>
       <Panel minSize={100} className="PanelView">
         <PanelView />
-
       </Panel>
     </Panel>
   );

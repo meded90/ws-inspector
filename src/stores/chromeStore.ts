@@ -1,7 +1,7 @@
-/// <reference types="chrome"/>
+// / <reference types="chrome"/>
 import { FrameStore } from './frameStore';
 import { ControlStore } from './controlStore';
-import { NetworkWebSocketParams } from '../viewer/types';
+import { IFrameSendingType, NetworkWebSocketCreatedParams, NetworkWebSocketParams } from '../viewer/types';
 
 /*
   ChromeStore is used for attaching debugger to a certain page and defining  listeners for
@@ -14,6 +14,7 @@ export class ChromeStore {
   tabId: number = parseInt(window.location.search.substr(1), 10);
 
   constructor(private frameStore: FrameStore, private controlStore: ControlStore) {
+    this.controlStore.tabId = this.tabId;
     // Restarts Network debugging on command
     chrome.runtime.onMessage.addListener((message) => {
       if (message.message === 'reattach' && message.tabId === this.tabId) {
@@ -24,28 +25,57 @@ export class ChromeStore {
     window.addEventListener('load', () => {
       this.startDebugging();
     });
+    this.startDebugging();
+    console.log(`–––   \n this.tabId `, this.tabId, `\n–––`);
     // Main function to listen Network events
     chrome.debugger.onEvent.addListener((source, method, params) => {
       const METHOD_FRAME_IN = 'Network.webSocketFrameReceived';
       const METHOD_FRAME_OUT = 'Network.webSocketFrameSent';
+      console.log(`–––   \n source, method, params `, source, method, params, `\n–––`);
       if (source.tabId !== this.tabId && !this.controlStore.isCapturing) {
         return;
       }
+      if (method === 'Network.webSocketClosed') {
+        console.log(`–––   \n Network.webSocketCreated `, `\n–––`);
+        console.log(`–––   \n params `, params, `\n–––`);
+        const { url, requestId } = params as NetworkWebSocketCreatedParams;
+        this.controlStore.removeUrlWs(url, requestId);
+      }
+      if (method === 'Network.webSocketCreated') {
+        console.log(`–––   \n Network.webSocketCreated `, `\n–––`);
+        console.log(`–––   \n params `, params, `\n–––`);
+        const { url, requestId } = params as NetworkWebSocketCreatedParams;
+        this.controlStore.addUrlWs(url, requestId);
+      }
       if (method === METHOD_FRAME_IN || method === METHOD_FRAME_OUT) {
         // Get Frame
-        const sendingType = method === METHOD_FRAME_IN ? 'incoming' : 'outgoing';
+        const sendingType = method === METHOD_FRAME_IN ? IFrameSendingType.INC : IFrameSendingType.OUT;
+        // console.log(`–––   \n params `, params, `\n–––`);
+        // console.log(`–––   \n source `, source, `\n–––`);
         const { requestId, timestamp, response } = params as NetworkWebSocketParams;
+        // console.log(`–––   \n requestId `, requestId, `\n–––`);
         this.frameStore.addFrameEntry(sendingType, requestId, timestamp, response);
       }
+    });
+
+    chrome.debugger.onDetach.addListener(function() {
+      console.log(`===  \n debugger.onDetach.addListener \n===`);
     });
   }
 
   startDebugging() {
+    console.log(`===  \n startDebugging \n===`);
+    this.controlStore.clearUrlWs();
+    chrome.debugger.attach({ tabId: this.tabId }, '1.3');
     // Command Debugger to use Network inspector module
     chrome.debugger.sendCommand({ tabId: this.tabId }, 'Network.enable', undefined, () => {
+      console.log(`–––   \n chrome.runtime.lastError `, chrome.runtime.lastError, `\n–––`);
+      console.log(`–––   \n chrome.runtime.lastError.message `, chrome.runtime.lastError.message, `\n–––`);
       if (chrome.runtime.lastError) {
+        this.controlStore.networkEnabled = false;
         console.error(chrome.runtime.lastError.message);
       } else {
+        this.controlStore.networkEnabled = true;
         console.log('Network enabled');
       }
     });

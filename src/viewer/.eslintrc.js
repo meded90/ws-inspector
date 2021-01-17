@@ -37,14 +37,15 @@ module.exports = {
     "prettier",
   ],
   rules: {
-    "react-hooks/rules-of-hooks": "error", // to make 'react-hooks' work
-    "react-hooks/exhaustive-deps": "warn", // to make 'react-hooks' work
-    "react/prop-types": 0, // prop-types rule
-    "no-empty": 0,
-    "no-underscore-dangle": 0,
-    "lines-between-class-members": 0,
-
-
+    'react-hooks/rules-of-hooks': 'error', // to make 'react-hooks' work
+    'react-hooks/exhaustive-deps': 'warn', // to make 'react-hooks' work
+    'react/prop-types': 0, // prop-types rule
+    'no-empty': 'off',
+    'no-underscore-dangle': 'off',
+    'lines-between-class-members': 'off',
+    'no-plusplus': 'off',
+    'no-useless-constructor': 'off',
+    'import/extensions': 'never',
   },
   settings: {
     "react": {

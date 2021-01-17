@@ -1,6 +1,6 @@
 import { computed, observable } from 'mobx';
 import * as Helpers from '../viewer/Helpers/Helper';
-import { frameSendingType, WebSocketFrame } from '../viewer/types';
+import { IFrameSendingType, WebSocketFrame } from '../viewer/types';
 import { ControlStore } from '../stores/controlStore';
 
 export enum IContentType {
@@ -13,18 +13,18 @@ export class FrameEntry {
   static frameIssueTime: number;
   static frameIssueWallTime: number;
   id: string;
-  sendingType: frameSendingType;
+  sendingType: IFrameSendingType;
   time: Date;
   length: number;
   text: string;
   opcode: number;
 
   constructor(
-    sendingType: frameSendingType,
+    sendingType: IFrameSendingType,
     requestId: string,
     timestamp: number,
     response: WebSocketFrame,
-    private control: ControlStore
+    private control: ControlStore,
   ) {
     this.opcode = response.opcode;
     this.id = Date.now().toString();
