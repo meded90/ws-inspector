@@ -11,7 +11,7 @@ export default function App() {
     <div className="App">
       <Overlay />
       <Panel cols>
-        <Panel size={330} minSize={180} resizable className="LeftPanel">
+        <Panel size={330} minSize={200} resizable className="LeftPanel">
           <ControlPanel />
           <FrameList />
         </Panel>

@@ -65,7 +65,7 @@ export const ControlPanel = () => {
         })}
         name="file-signature"
         onClick={openNameReg}
-        title="RexExp"
+        title="Parse Name"
       />
       <div
         className={cx('input-wrap', {
@@ -75,7 +75,7 @@ export const ControlPanel = () => {
         <input
           className={'input'}
           name={'reg-name'}
-          placeholder={'Name regexp: "type":\\s?"(\\w+)"'}
+          placeholder={'Name: "type":\\s?"(\\w+)"'}
           value={controlStore.regName}
           onChange={onRegName}
         />

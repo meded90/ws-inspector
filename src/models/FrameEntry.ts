@@ -45,7 +45,7 @@ export class FrameEntry {
     return this._contentType!;
   }
 
-  @observable
+  @observable.ref
   private _content?: string | Uint8Array | object;
 
   @computed

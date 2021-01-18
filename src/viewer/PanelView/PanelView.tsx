@@ -46,7 +46,7 @@ export default function PanelView() {
             </Tab>
           )}
         </ul>
-        {!panel && panel === IContentType.text && <TextViewer data={frame.text} />}
+        {!panel || panel === IContentType.text && <TextViewer data={frame.text} />}
         {panel === IContentType.json && <JsonViewer data={frame.content} />}
         {panel === IContentType.binary && (
           <HexViewer className="tab-pane" data={frame.content as Uint8Array} />

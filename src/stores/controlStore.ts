@@ -1,5 +1,4 @@
 import { autorun, observable, toJS } from 'mobx';
-import isObject from 'lodash/isObject';
 
 export enum IOpenInput {
   'close',
@@ -16,7 +15,7 @@ export class ControlStore {
   @observable openInput: IOpenInput = IOpenInput.close;
   @observable
   urlWs: Record<string, Record<string, string>> = {};
-  cacheKey: Array<keyof ControlStore> = ['isCapturing', 'regName', 'filter', 'isFilterInverse', 'urlWs'];
+  cacheKey: Array<keyof Partial<ControlStore>> = ['isCapturing', 'regName', 'filter', 'isFilterInverse'];
   tabId: number;
 
   // todo Доделать собшения оп розбе перезапуска
@@ -24,20 +23,16 @@ export class ControlStore {
   networkEnabled: boolean;
 
   constructor() {
-    this.init();
-    autorun(() => {
-      console.log(`–––   \n this.urlWs `, toJS(this.urlWs), `\n–––`);
+    chrome.storage.local.get((result) => {
+      Object.assign(this, result);
     });
     autorun(() => {
-      this.cacheKey.forEach((key) => {
-        let value = toJS(this[key]);
-        if (value !== null) {
-          if (isObject(value)) {
-            value = JSON.stringify(value);
-          }
-          localStorage.setItem(key, value as string);
-        }
-      });
+      const result: Partial<ControlStore> = {};
+      for (let i = 0; i < this.cacheKey.length; i++) {
+        let key = this.cacheKey[i];
+        result[key] = toJS(this[key]) as any;
+      }
+      chrome.storage.local.set(result);
     });
   }
 
@@ -56,29 +51,5 @@ export class ControlStore {
 
   clearUrlWs() {
     delete this.urlWs[this.tabId];
-  }
-
-  init() {
-    const cacheState = this.cacheKey.reduce<Record<string, string | boolean>>((acc, key) => {
-      const value = window.localStorage.getItem(key);
-      if (value !== null && value !== undefined) {
-        acc[key] = value;
-        if (value === 'true') {
-          acc[key] = true;
-        }
-        if (value === 'false') {
-          acc[key] = false;
-        }
-        console.log(`–––   \n value `, value, `\n–––`);
-        try {
-          if (isObject(JSON.parse(value))) {
-            return JSON.parse(value);
-          }
-        } catch {
-        }
-      }
-      return acc;
-    }, {});
-    Object.assign(this, cacheState);
   }
 }
