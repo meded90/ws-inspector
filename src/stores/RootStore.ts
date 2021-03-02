@@ -3,11 +3,13 @@ import { ControlStore } from './controlStore';
 import { ChromeStore } from './chromeStore';
 import { MobXProviderContext } from 'mobx-react';
 import { useContext } from 'react';
+import { WebSocketUrlStore } from './WebSocketUrlStore';
 
 export function createStores() {
   const controlStore = new ControlStore();
+  const webSocketUrlStore = new WebSocketUrlStore();
   const frameStore = new FrameStore(controlStore);
-  const chromeStore = new ChromeStore(frameStore, controlStore);
+  const chromeStore = new ChromeStore(frameStore, controlStore, webSocketUrlStore);
 
   return { frameStore, controlStore, chromeStore };
 }

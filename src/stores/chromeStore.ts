@@ -3,6 +3,7 @@ import { FrameStore } from './frameStore';
 import { ControlStore } from './controlStore';
 import { IFrameSendingType, NetworkWebSocketCreatedParams, NetworkWebSocketParams } from '../viewer/types';
 import { action, observable } from 'mobx';
+import { WebSocketUrlStore } from './WebSocketUrlStore';
 
 /*
   ChromeStore is used for attaching debugger to a certain page and defining  listeners for
@@ -16,7 +17,11 @@ export class ChromeStore {
   @observable
   isAttached = false;
 
-  constructor(private frameStore: FrameStore, private controlStore: ControlStore) {
+  constructor(
+    private frameStore: FrameStore,
+    private controlStore: ControlStore,
+    private webSocketUrlStore: WebSocketUrlStore,
+  ) {
     this.controlStore.tabId = this.tabId;
     // Restarts Network debugging on command
     chrome.runtime.onMessage.addListener((message) => {
@@ -37,11 +42,11 @@ export class ChromeStore {
       }
       if (method === 'Network.webSocketClosed') {
         const { url, requestId } = params as NetworkWebSocketCreatedParams;
-        this.controlStore.removeUrlWs(url, requestId);
+        this.webSocketUrlStore.removeUrlWs(url, requestId);
       }
       if (method === 'Network.webSocketCreated') {
         const { url, requestId } = params as NetworkWebSocketCreatedParams;
-        this.controlStore.addUrlWs(url, requestId);
+        this.webSocketUrlStore.addUrlWs(url, requestId);
       }
       const METHOD_FRAME_IN = 'Network.webSocketFrameReceived';
       const METHOD_FRAME_OUT = 'Network.webSocketFrameSent';

@@ -1,4 +1,4 @@
-import { autorun, observable, toJS } from 'mobx';
+import { action, observable, reaction, toJS } from 'mobx';
 
 export enum IOpenInput {
   'close',
@@ -7,49 +7,44 @@ export enum IOpenInput {
 }
 
 export class ControlStore {
+  @observable isInitApp = false;
+
   @observable activeId: string | null;
   @observable isCapturing = true;
   @observable regName = '';
   @observable filter = '';
   @observable isFilterInverse = true;
   @observable openInput: IOpenInput = IOpenInput.close;
-  @observable
-  urlWs: Record<string, Record<string, string>> = {};
-  cacheKey: Array<keyof Partial<ControlStore>> = ['isCapturing', 'regName', 'filter', 'isFilterInverse'];
-  tabId: number;
+  cacheKey: Array<keyof Partial<ControlStore>> = ['isCapturing', 'regName', 'filter', 'isFilterInverse', 'sizeSplit'];
 
   // todo Доделать собшения оп розбе перезапуска
   @observable
   networkEnabled: boolean;
+  @observable sizeSplit: number[] = [250];
 
   constructor() {
-    chrome.storage.local.get((result) => {
+    chrome.storage.local.get(action((result) => {
       Object.assign(this, result);
-    });
-    autorun(() => {
-      const result: Partial<ControlStore> = {};
-      for (let i = 0; i < this.cacheKey.length; i++) {
-        let key = this.cacheKey[i];
-        result[key] = toJS(this[key]) as any;
-      }
-      chrome.storage.local.set(result);
-    });
+      console.log(`–––   \n this `, this, `\n–––`);
+      this.isInitApp = true;
+    }));
+    reaction(
+      () => {
+        const result: Partial<ControlStore> = {};
+        for (let i = 0; i < this.cacheKey.length; i++) {
+          let key = this.cacheKey[i];
+          result[key] = toJS(this[key]) as any;
+        }
+        return result;
+      },
+      (result) => {
+        chrome.storage.local.set(result);
+      },
+    );
   }
 
-  addUrlWs(url: string, requestId: string) {
-    if (!this.urlWs[this.tabId]) {
-      this.urlWs[this.tabId] = {};
-    }
-    this.urlWs[this.tabId][url] = requestId;
-  }
-
-  removeUrlWs(url: string, requestId: string) {
-    if (this.urlWs[this.tabId][url] === requestId) {
-      delete this.urlWs[this.tabId][url];
-    }
-  }
-
-  clearUrlWs() {
-    delete this.urlWs[this.tabId];
-  }
+  @action.bound
+  onSaveSizes(value: number[]) {
+    this.sizeSplit[0] = value[0];
+  };
 }

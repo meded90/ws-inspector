@@ -60,8 +60,8 @@
     "mobx-react": "^6.2.2",
     "mobx-utils": "^5.6.2",
     "react": "^17.0.1",
+    "react-collapse-pane": "^1.4.2",
     "react-dom": "^17.0.1",
-    "react-flex-panel": "^1.0.0",
     "react-fontawesome": "^1.7.1",
     "react-inspector": "^5.1.0"
   }
