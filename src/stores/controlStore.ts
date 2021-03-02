@@ -18,14 +18,13 @@ export class ControlStore {
   cacheKey: Array<keyof Partial<ControlStore>> = ['isCapturing', 'regName', 'filter', 'isFilterInverse', 'sizeSplit'];
 
   // todo Доделать собшения оп розбе перезапуска
-  @observable
-  networkEnabled: boolean;
+  @observable networkEnabled: boolean;
+
   @observable sizeSplit: number[] = [250];
 
   constructor() {
     chrome.storage.local.get(action((result) => {
       Object.assign(this, result);
-      console.log(`–––   \n this `, this, `\n–––`);
       this.isInitApp = true;
     }));
     reaction(
@@ -45,6 +44,6 @@ export class ControlStore {
 
   @action.bound
   onSaveSizes(value: number[]) {
-    this.sizeSplit[0] = value[0];
+    this.sizeSplit = value;
   };
 }

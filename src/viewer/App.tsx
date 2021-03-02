@@ -11,7 +11,6 @@ import { observer } from 'mobx-react';
 export default observer(function App() {
     const { controlStore } = useStores();
     if (!controlStore.isInitApp) return null;
-    console.log(`–––   \n controlStore.sizeSplit `, controlStore.sizeSplit, `\n–––`);
     return (
       <div className="App">
         <Overlay />

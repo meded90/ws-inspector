@@ -22,7 +22,7 @@ export class ChromeStore {
     private controlStore: ControlStore,
     private webSocketUrlStore: WebSocketUrlStore,
   ) {
-    this.controlStore.tabId = this.tabId;
+    this.webSocketUrlStore.tabId = this.tabId;
     // Restarts Network debugging on command
     chrome.runtime.onMessage.addListener((message) => {
       if (message.message === 'reattach' && message.tabId === this.tabId) {
